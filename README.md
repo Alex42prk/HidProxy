@@ -31,17 +31,20 @@ X-UI Proxy Manager — это инструмент для управления �
 
 1. Клонируйте репозиторий:
    bash
+   
    git clone https://github.com/Alex42prk/HidProxy.git
    cd HidProxy
    
 
-2. Соберите Docker-образ:
+3. Соберите Docker-образ:
    bash
+   
    docker build -t x-ui-proxy .
    
 
-3. Запустите контейнер:
+5. Запустите контейнер:
    bash
+   
    docker run -d --name x-ui-container -p 80:80 -p 443:443 -p 54321:54321 x-ui-proxy
    
 
@@ -52,6 +55,7 @@ X-UI Proxy Manager — это инструмент для управления �
 После установки вы можете настроить учетные данные для доступа к панели управления:
 
 bash
+
 x-ui setting -username admin -password "ВашПароль123" -port 54321
 
 
@@ -59,16 +63,19 @@ x-ui setting -username admin -password "ВашПароль123" -port 54321
 
 - Проверить статус сервера:
   bash
+  
   docker ps
   
 
 - Остановить контейнер:
   bash
+  
   docker stop x-ui-container
   
 
 - Запустить контейнер снова:
   bash
+  
   docker start x-ui-container
   
 
@@ -77,6 +84,7 @@ x-ui setting -username admin -password "ВашПароль123" -port 54321
 Пример логов установки:
 
 bash
+
 Step 3/7 : RUN wget -O x-ui-linux-amd64.tar.gz https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-amd64.tar.gz
 
 Length: 16509803 (16M) [application/octet-stream]
@@ -94,11 +102,13 @@ Successfully tagged x-ui-proxy:latest
 
 1. Наличие необходимых зависимостей:
    bash
+   
    apt-get update && apt-get install -y curl wget ca-certificates
    
 
-2. Корректность ссылок на ресурсы. Например, если GitHub недоступен, используйте зеркало:
+3. Корректность ссылок на ресурсы. Например, если GitHub недоступен, используйте зеркало:
    bash
+   
    RUN wget -O x-ui-linux-amd64.tar.gz https://ghproxy.com/https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-amd64.tar.gz
    
 
@@ -106,6 +116,7 @@ Successfully tagged x-ui-proxy:latest
 
 Если контейнер не запускается, проверьте логи:
 bash
+
 docker logs x-ui-container
 
 
