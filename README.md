@@ -1,69 +1,76 @@
-HidProxy — это приложение для управления прокси-серверами с поддержкой доменных зон `.com` и `.io`. Оно автоматически проверяет рабочие и быстрые прокси из списка в интернете, а также предоставляет удобный интерфейс для управления настройками через системный трей.
 
-Установка
+HidProxy / X-UI Installation Logs
 
-Локальная установка
-
-1. Клонируйте репозиторий:
-   bash
-   git clone https://github.com/Alex42prk/HidProxy.git
-   cd HidProxy
-   
-   <button onclick="copyToClipboard('https://github.com/Alex42prk/HidProxy.git')">Копировать</button>
-
-2. Установите зависимости:
-   bash
-   pip install -r requirements.txt
-   
-Использование
-
-Для запуска приложения выполните команду:
-
+## 1. Ошибки при установке через Docker Compose
+**Контейнер Hiddify не запускается:**
 bash
-python src/main.py
+Error: Key not found: warp_mode
+ERROR:systemctl:the ExecStartPre control process exited with error code
 
-<button onclick="copyToClipboard('python src/main.py')">Копировать</button>
+Решение:
+bash
+# Исправление конфигурации
+mkdir -p /root/hiddify-config/hiddify-panel
+echo "WARP_MODE=off" >> /root/hiddify-config/config.env
+docker compose up -d
 
-Развертывание на удаленном сервере
-
-1. Убедитесь, что на сервере установлен Docker.
-2. Скопируйте образ на сервер:
-   bash
-   docker save hidproxy | gzip > hidproxy.tar.gz
-   scp hidproxy.tar.gz user@your-server:/path/to/destination
-   
-   <button onclick="copyToClipboard('docker save hidproxy | gzip > hidproxy.tar.gz')">Копировать</button>
-
-3. Загрузите образ на сервере:
-   bash
-   docker load < hidproxy.tar.gz
-   
-   <button onclick="copyToClipboard('docker load < hidproxy.tar.gz')">Копировать</button>
-
-4. Запустите контейнер:
-   bash
-   docker run -d --name hidproxy-server -p 80:80 -p 443:443 -p 54321:54321 hidproxy
-   
-   <button onclick="copyToClipboard('docker run -d --name hidproxy-server -p 80:80 -p 443:443 -p 54321:54321 hidproxy')">Копировать</button>
-
-Дополнительные ссылки
-
-- [Free Proxy List](https://free-proxy-list.net/)
-  <button onclick="copyToClipboard('https://free-proxy-list.net/')">Копировать</button>
-
-- [Pystray Documentation](https://github.com/moses-palmer/pystray)
-  <button onclick="copyToClipboard('https://github.com/moses-palmer/pystray')">Копировать</button>
+2. Логи установки X-UI
+Ошибка монтирования файлов:
+bash
+Step 3/6 : RUN wget -O x-ui-linux-amd64.tar.gz https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-amd64.tar.gz
+tar: Child returned status 1
 
 
+Исправление:
+bash
+Используйте проверенное зеркало
+RUN wget -O x-ui-linux-amd64.tar.gz https://ghproxy.com/https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-amd64.tar.gz
 
-html
-<script>
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    alert("Скопировано: " + text);
-  }).catch(err => {
-    console.error("Ошибка копирования: ", err);
-  });
-}
-</script>
+
+3. Пример Dockerfile
+Файл `Dockerfile` для сборки X-UI:
+ockerfile
+
+FROM debian:12-slim
+RUN apt-get update && apt-get install -y curl wget ca-certificates
+RUN wget -O x-ui-linux-amd64.tar.gz https://ghproxy.com/https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-amd64.tar.gz && \
+    tar -zxvf x-ui-linux-amd64.tar.gz -C /usr/local/ && \
+    rm x-ui-linux-amd64.tar.gz
+RUN cp /usr/local/x-ui/x-ui /usr/bin/x-ui && \
+    chmod +x /usr/bin/x-ui
+RUN x-ui setting -username admin -password "SecurePass123" -port 54321
+EXPOSE 80 443 54321
+CMD ["/usr/bin/x-ui", "start"]
+
+
+
+4. Траблшутинг
+Частые ошибки:
+- `Connection refused` — проверьте открытые порты в фаерволе:
+  bash
+  ufw allow 54321/tcp
+  ufw reload
+  
+- `invalid token` — обновите GitHub-токен в настройках.
+
+
+## 5. Полезные ссылки
+- [Скрипт установки Hiddify](https://github.com/hiddify/Hiddify-Manager)
+- [Документация X-UI](https://github.com/vaxilu/x-ui)
+
+
+3. Форматирование логов
+- Вставьте логи в блоки кода с указанием языка (например, `bash` для терминальных команд).
+- Для длинных логов используйте сокращения (например, `...` вместо повторяющихся строк).
+
+4. Сохранение
+Нажмите "Commit changes" внизу страницы, чтобы сохранить `README.md`.
+
+---
+
+### 5. Дополнительно
+- Если логи слишком большие, сохраните их в отдельные файлы (например, `logs/install.log`) и добавьте ссылки:
+  markdown
+  Полные логи доступны в [файле install.log](logs/install.log).
+  
 
